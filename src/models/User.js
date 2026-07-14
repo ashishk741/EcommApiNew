@@ -1,5 +1,3 @@
-
-
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
@@ -26,7 +24,6 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      select: false,
     },
 
     profileImage: {
@@ -34,76 +31,35 @@ const userSchema = new mongoose.Schema(
       default: "",
     },
 
-    isVerified: {
-      type: Boolean,
-      default: false,
-    },
-
     role: {
       type: String,
       enum: ["USER", "ADMIN"],
       default: "USER",
     },
+
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    otp: {
+      type: String,
+      default: null,
+    },
+
+    otpExpiry: {
+      type: Date,
+      default: null,
+    },
+
+    refreshToken: {
+      type: String,
+      default: null,
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 module.exports = mongoose.model("User", userSchema);
-
-// const mongoose = require("mongoose");
-
-// const userSchema = new mongoose.Schema(
-//   {
-//     name: {
-//       type: String,
-//       required: true,
-//       trim: true,
-//     },
-
-//     mobile: {
-//       type: String,
-//       required: true,
-//       unique: true,
-//     },
-
-//     email: {
-//       type: String,
-//       required: true,
-//       unique: true,
-//       lowercase: true,
-//       trim: true,
-//     },
-
-//     password: {
-//       type: String,
-//       required: true,
-//       select: false,
-//     },
-
-//     profileImage: {
-//       type: String,
-//       default: "",
-//     },
-
-//     role: {
-//       type: String,
-//       enum: ["USER", "ADMIN"],
-//       default: "USER",
-//     },
-
-//     isVerified: {
-//       type: Boolean,
-//       default: false,
-//     },
-
-//     refreshToken: {
-//       type: String,
-//       default: "",
-//     }
-//   },
-//   {
-//     timestamps: true,
-//   }
-// );
-
-// module.exports = mongoose.model("User", userSchema);

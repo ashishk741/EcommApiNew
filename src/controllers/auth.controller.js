@@ -6,7 +6,7 @@ exports.signup = async (req, res) => {
     console.log(req.body);
     try {
         //const result = await authService.signup(req);
-const result = await authService.signup(req.body);
+const result = await authService.signup(req);
 
 
         res.status(201).json({
