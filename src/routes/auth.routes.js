@@ -12,13 +12,7 @@ router.post(
     upload.single("profileImage"),
     authController.signup
 );
+router.post("/verify-otp", authController.verifyOTP);
 module.exports = router;
 
 
-// app.get("/", (req, res) => {
-//     console.log("Root API Hit");
-//     res.json({
-//         success: true,
-//         message: "Ecommerce API Running 🚀"
-//     });
-// });
