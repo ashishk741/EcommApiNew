@@ -30,16 +30,3 @@ app.get("/", (req, res) => {
 });
 
 module.exports = app;
-
-// const express = require("express");
-
-// const app = express();
-
-// console.log("App Loaded");
-
-// app.get("/", (req, res) => {
-//     console.log("Root Hit");
-//     res.send("OK");
-// });
-
-// module.exports = app;

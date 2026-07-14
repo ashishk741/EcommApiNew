@@ -1,8 +1,19 @@
-const dotenv = require("dotenv");
-dotenv.config();
 require("dotenv").config();
 
-require("dotenv").config();
+const express = require("express");
+const app = express();
+
+const dotenv = require("dotenv");
+const authRoutes = require("./routes/auth.routes");
+dotenv.config();
+
+
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
+ //app = require("./app");
+app.use("/api/v1/auth", authRoutes);
+
+
 
 console.log("EMAIL_FROM =", process.env.EMAIL_FROM);
 console.log("BREVO_API_KEY =", process.env.BREVO_API_KEY ? "Loaded" : "Missing");
@@ -10,10 +21,11 @@ const cloudinary = require("cloudinary").v2;
 
 cloudinary.config();
 
-const app = require("./app");
 const connectDB = require('./config/db');
 // Connect Database
 connectDB();
+
+
 
 const PORT = process.env.PORT || 8000;
 

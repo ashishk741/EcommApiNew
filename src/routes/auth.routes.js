@@ -13,6 +13,7 @@ router.post(
     authController.signup
 );
 router.post("/verify-otp", authController.verifyOTP);
+
 module.exports = router;
 
 

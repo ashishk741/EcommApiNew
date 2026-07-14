@@ -73,10 +73,8 @@ exports.signup = async (req) => {
         email,
         password: hashedPassword,
         profileImage,
-
         otp,
         otpExpiry,
-
         isVerified: false
 
     });
@@ -99,66 +97,48 @@ exports.signup = async (req) => {
         mobile: user.mobile,
         email: user.email,
         profileImage: user.profileImage,
-        isVerified: user.isVerified
+        isVerified: user.isVerified,
+        otp:user.otp
 
     };
 
 };
 
 
-
-
-
 // Verify OTP Service
-
 exports.verifyOTP = async (data) => {
 
     const { email, otp } = data;
 
 
-
     const user = await User.findOne({ email });
 
 
-    if (!user) {
+    if(!user){
         throw new Error("User not found");
     }
 
 
-
-    if (user.isVerified) {
-        throw new Error("User already verified");
-    }
-
-
-
-    if (user.otp != otp) {
+    if(user.otp != otp){
         throw new Error("Invalid OTP");
     }
 
 
-
-    if (new Date() > user.otpExpiry) {
+    if(new Date() > user.otpExpiry){
         throw new Error("OTP expired");
     }
 
 
-
     user.isVerified = true;
-
     user.otp = null;
-
     user.otpExpiry = null;
 
 
     await user.save();
 
 
-
     return {
-
-        message: "Email verified successfully"
-
+        message:"OTP verified successfully"
     };
 
 };
