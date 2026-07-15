@@ -46,6 +46,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    
+     device: {
+      type: String,
+      default: null,
+    },
 
     otpExpiry: {
       type: Date,

@@ -8,7 +8,7 @@ const sendOTPEmail = require("../utils/sendMail");
 // Signup Service
 exports.signup = async (req) => {
 
-    const { name, mobile, email, password } = req.body;
+    const { name, mobile, email, password, device} = req.body;
 
 
     // Validation
@@ -75,7 +75,9 @@ exports.signup = async (req) => {
         profileImage,
         otp,
         otpExpiry,
-        isVerified: false
+        device,
+        isVerified: false,
+        
 
     });
 
@@ -98,7 +100,8 @@ exports.signup = async (req) => {
         email: user.email,
         profileImage: user.profileImage,
         isVerified: user.isVerified,
-        otp:user.otp
+        otp:user.otp,
+        device:user.device
 
     };
 
@@ -191,8 +194,9 @@ exports.login = async (data) => {
 
             mobile: user.mobile,
 
-            profileImage: user.profileImage
+            profileImage: user.profileImage,
 
+            device: user.device
         }
 
     };
