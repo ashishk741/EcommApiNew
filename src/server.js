@@ -5,6 +5,8 @@ const app = express();
 
 const dotenv = require("dotenv");
 const authRoutes = require("./routes/auth.routes");
+//const authMiddleware = require("../middlewares/auth.middleware");
+
 dotenv.config();
 
 
