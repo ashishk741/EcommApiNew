@@ -234,6 +234,7 @@ exports.refreshToken = async (token) => {
 
 };
 
+
 //Logout
 exports.logout = async (userId) => {
 
@@ -250,4 +251,97 @@ exports.logout = async (userId) => {
     return {
         message: "Logout successful"
     };
+};
+
+//Reset Password....
+const crypto = require("crypto");
+const bcrypt = require("bcryptjs");
+const User = require("../models/user.model");
+
+const generateOTP = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+
+// ===============================
+// FORGOT PASSWORD
+// ===============================
+const forgotPassword = async (email) => {
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new Error("User not found with this email");
+  }
+
+  const otp = generateOTP();
+
+  const hashedOTP = crypto
+    .createHash("sha256")
+    .update(otp)
+    .digest("hex");
+
+  user.resetPasswordOTP = hashedOTP;
+
+  // OTP valid for 10 minutes
+  user.resetPasswordOTPExpires = Date.now() + 10 * 60 * 1000;
+
+  await user.save();
+
+  return {
+    user,
+    otp
+  };
+};
+
+
+// ===============================
+// RESET PASSWORD
+// ===============================
+const resetPassword = async (email, otp, newPassword) => {
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  if (
+    !user.resetPasswordOTP ||
+    !user.resetPasswordOTPExpires
+  ) {
+    throw new Error("OTP not found. Please request a new OTP");
+  }
+
+  if (user.resetPasswordOTPExpires < Date.now()) {
+    throw new Error("OTP has expired");
+  }
+
+  const hashedOTP = crypto
+    .createHash("sha256")
+    .update(otp)
+    .digest("hex");
+
+  if (hashedOTP !== user.resetPasswordOTP) {
+    throw new Error("Invalid OTP");
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+  user.password = hashedPassword;
+
+  // Clear OTP after successful reset
+  user.resetPasswordOTP = null;
+  user.resetPasswordOTPExpires = null;
+
+  // Optional: invalidate refresh token
+  user.refreshToken = null;
+
+  await user.save();
+
+  return user;
+};
+
+
+module.exports = {
+  forgotPassword,
+  resetPassword
 };

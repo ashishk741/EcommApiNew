@@ -54,3 +54,53 @@ console.log(
 );
 
 module.exports = sendOTPEmail;
+
+
+//Forgot.......
+const brevo = require("@getbrevo/brevo");
+
+const sendForgotPasswordOTP = async (email, otp) => {
+  const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+
+  apiInstance.setApiKey(
+    apiInstance.TransactionalEmailsApikeys.apiKey,
+    process.env.BREVO_API_KEY
+  );
+
+  const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+
+  sendSmtpEmail.sender = {
+    name: "EcommApi",
+    email: process.env.EMAIL_FROM
+  };
+
+  sendSmtpEmail.to = [
+    {
+      email: email
+    }
+  ];
+
+  sendSmtpEmail.subject = "Password Reset OTP";
+
+  sendSmtpEmail.htmlContent = `
+    <div style="font-family: Arial, sans-serif;">
+      <h2>Password Reset</h2>
+
+      <p>Your OTP for resetting your password is:</p>
+
+      <h1 style="letter-spacing: 5px;">
+        ${otp}
+      </h1>
+
+      <p>This OTP will expire in <b>10 minutes</b>.</p>
+
+      <p>If you did not request a password reset, please ignore this email.</p>
+    </div>
+  `;
+
+  await apiInstance.sendTransacEmail(sendSmtpEmail);
+};
+
+module.exports = {
+  sendForgotPasswordOTP
+};
