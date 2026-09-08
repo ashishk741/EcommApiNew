@@ -1,9 +1,9 @@
-const User = require("../models/User");
-const bcrypt = require("bcryptjs");
+//const User = require("../models/User");
+//const bcrypt = require("bcryptjs");
+
 const uploadImage = require("../utils/cloudinaryUpload");
 const generateOTP = require("../utils/generateOtp");
 const sendOTPEmail = require("../utils/sendMail");
-
 
 // Signup Service
 exports.signup = async (req) => {
@@ -40,14 +40,14 @@ exports.signup = async (req) => {
 
 
     // Generate OTP
-    const otp = generateOTP();
+    // const otp = generateOTP();
 
-    const otpExpiry = new Date(
-        Date.now() + 10 * 60 * 1000
-    );
+    // const otpExpiry = new Date(
+    //     Date.now() + 10 * 60 * 1000
+    // );
 
 
-    console.log("Generated OTP:", otp);
+    // console.log("Generated OTP:", otp);
 
 
 
@@ -256,11 +256,11 @@ exports.logout = async (userId) => {
 //Reset Password....
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
-const User = require("../models/user.model");
+const User = require("../models/user.js");
 
-const generateOTP = () => {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-};
+// const generateOTP = () => {
+//   return Math.floor(100000 + Math.random() * 900000).toString();
+// };
 
 
 // ===============================

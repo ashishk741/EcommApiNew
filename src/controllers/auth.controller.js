@@ -1,53 +1,93 @@
 const authService = require("../services/auth.service");
+const { sendForgotPasswordOTP } = require("../utils/sendMail");
+
+
+// =====================================
+// SIGNUP
+// =====================================
 
 exports.signup = async (req, res) => {
-  try {
-    console.log("Body:", req.body);
-    console.log("File:", req.file);
 
-    const result = await authService.signup(req);
+    try {
 
-    return res.status(201).json({
-      success: true,
-      message: "User Registered Successfully",
-      data: result,
-    });
+        console.log("Body:", req.body);
+        console.log("File:", req.file);
 
-  } catch (error) {
-    console.error(error);
+        const result = await authService.signup(req);
 
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
-  }
-  
+        return res.status(201).json({
+
+            success: true,
+
+            message: "User Registered Successfully",
+
+            data: result
+
+        });
+
+    } catch (error) {
+
+        console.error("Signup Error:", error);
+
+        return res.status(400).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
 };
+
+
+// =====================================
+// VERIFY OTP
+// =====================================
 
 exports.verifyOTP = async (req, res) => {
-  try {
-    const result = await authService.verifyOTP(req.body);
-console.log("OTP BODY:", req.body);
-    return res.status(200).json({
-      success: true,
-      message: result.message,
-    });
 
-  } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
-  }
+    try {
+
+        console.log("OTP BODY:", req.body);
+
+        const result =
+            await authService.verifyOTP(req.body);
+
+        return res.status(200).json({
+
+            success: true,
+
+            message: result.message
+
+        });
+
+    } catch (error) {
+
+        console.error("Verify OTP Error:", error);
+
+        return res.status(400).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
 };
 
 
-//Login
+// =====================================
+// LOGIN
+// =====================================
+
 exports.login = async (req, res) => {
 
     try {
 
-        const result = await authService.login(req.body);
+        const result =
+            await authService.login(req.body);
 
         return res.status(200).json({
 
@@ -61,6 +101,8 @@ exports.login = async (req, res) => {
 
     } catch (error) {
 
+        console.error("Login Error:", error);
+
         return res.status(400).json({
 
             success: false,
@@ -70,28 +112,52 @@ exports.login = async (req, res) => {
         });
 
     }
-
 };
 
-//Refresh
+
+// =====================================
+// REFRESH TOKEN
+// =====================================
+
 exports.refreshToken = async (req, res) => {
 
     try {
 
+        const { refreshToken } = req.body;
+
+        if (!refreshToken) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message: "Refresh Token Required"
+
+            });
+
+        }
+
         const result =
             await authService.refreshToken(
-                req.body.refreshToken
+                refreshToken
             );
 
-        return res.json({
+        return res.status(200).json({
 
             success: true,
+
+            message: "Access Token Generated Successfully",
 
             data: result
 
         });
 
     } catch (error) {
+
+        console.error(
+            "Refresh Token Error:",
+            error
+        );
 
         return res.status(401).json({
 
@@ -102,124 +168,185 @@ exports.refreshToken = async (req, res) => {
         });
 
     }
-
 };
 
-//Logout
+
+// =====================================
+// LOGOUT
+// =====================================
+
 exports.logout = async (req, res) => {
 
     try {
 
-        const result = await authService.logout(req.user.id);
+        const result =
+            await authService.logout(
+                req.user.id
+            );
 
         return res.status(200).json({
+
             success: true,
+
             message: result.message
+
         });
 
     } catch (error) {
 
+        console.error("Logout Error:", error);
+
         return res.status(400).json({
+
             success: false,
+
             message: error.message
+
         });
 
     }
-
 };
-
-const authService = require("../services/auth.service");
-const { sendForgotPasswordOTP } = require("../services/email.service");
 
 
 // =====================================
 // FORGOT PASSWORD
 // =====================================
-const forgotPassword = async (req, res) => {
-  try {
-    const { email } = req.body;
 
-    if (!email) {
-      return res.status(400).json({
-        success: false,
-        message: "Email is required"
-      });
+exports.forgotPassword = async (req, res) => {
+
+    try {
+
+        const { email } = req.body;
+
+        if (!email) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message: "Email is required"
+
+            });
+
+        }
+
+        const result =
+            await authService.forgotPassword({
+                email
+            });
+
+        /*
+         * OTP email service
+         *
+         * Agar authService.forgotPassword()
+         * already email send karta hai,
+         * to yahan email dobara mat bhejna.
+         */
+
+        return res.status(200).json({
+
+            success: true,
+
+            message: result.message
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Forgot Password Error:",
+            error
+        );
+
+        return res.status(400).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
     }
-
-    const result = await authService.forgotPassword(email);
-
-    await sendForgotPasswordOTP(
-      email,
-      result.otp
-    );
-
-    return res.status(200).json({
-      success: true,
-      message: "OTP sent successfully to your email"
-    });
-
-  } catch (error) {
-
-    console.error("Forgot Password Error:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
 };
 
 
 // =====================================
 // RESET PASSWORD
 // =====================================
-const resetPassword = async (req, res) => {
-  try {
 
-    const {
-      email,
-      otp,
-      newPassword
-    } = req.body;
+exports.resetPassword = async (req, res) => {
 
-    if (!email || !otp || !newPassword) {
-      return res.status(400).json({
-        success: false,
-        message: "Email, OTP and new password are required"
-      });
+    try {
+
+        const {
+            email,
+            otp,
+            newPassword
+        } = req.body;
+
+
+        // Validation
+
+        if (!email || !otp || !newPassword) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message:
+                    "Email, OTP and new password are required"
+
+            });
+
+        }
+
+
+        if (newPassword.length < 8) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message:
+                    "Password must be at least 8 characters"
+
+            });
+
+        }
+
+
+        const result =
+            await authService.resetPassword({
+
+                email,
+                otp,
+                newPassword
+
+            });
+
+
+        return res.status(200).json({
+
+            success: true,
+
+            message: result.message
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Reset Password Error:",
+            error
+        );
+
+        return res.status(400).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
     }
-
-    if (newPassword.length < 8) {
-      return res.status(400).json({
-        success: false,
-        message: "Password must be at least 8 characters"
-      });
-    }
-
-    await authService.resetPassword(
-      email,
-      otp,
-      newPassword
-    );
-
-    return res.status(200).json({
-      success: true,
-      message: "Password reset successfully"
-    });
-
-  } catch (error) {
-
-    console.error("Reset Password Error:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-};
-
-
-module.exports = {
-  forgotPassword,
-  resetPassword
 };
